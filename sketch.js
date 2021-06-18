@@ -3,13 +3,13 @@ let iterationsSlider;
 let iterApplyButton;
 let iterations = 50;
 
-let lowResButton;
-let highResButton;
+const LOW_RES_PIXELSKIP = 9;
+
+let highresResPerFrame = [100, 100];
+let lastPixelsDrawn = [0, 0];
 
 let zoom = 300;
 let origin = [0, 0];
-
-let pixelSkipCount = 9;
 
 function setup() 
 {
@@ -22,17 +22,34 @@ function setup()
     iterApplyButton = createButton("Apply Iterations");
     iterApplyButton.mousePressed(applyIterations);
 
-    highResButton = createButton("High Res");
-    highResButton.mousePressed(() => {pixelSkipCount = 1; drawMandelbrot();});
-    lowResButton = createButton("Low Res");
-    lowResButton.mousePressed(() => {pixelSkipCount = 9; drawMandelbrot();});
+    drawMandelbrot(LOW_RES_PIXELSKIP);
+}
 
-    drawMandelbrot();
+function draw(){
+    if (origin[0] < height && origin[1] < width){
+
+        var xRange = [lastPixelsDrawn[0], min(lastPixelsDrawn[0] + highresResPerFrame[0], width)];
+        var yRange = [lastPixelsDrawn[1], min(lastPixelsDrawn[1] + highresResPerFrame[1], height)];
+        drawMandelbrot(1, clearBg = false, yRange=yRange, xRange=xRange);
+
+        if (xRange[1] == width)
+            lastPixelsDrawn = [0, yRange[1]];
+        else
+            lastPixelsDrawn = [xRange[1], yRange[0]];
+    }
 }
 
 function applyIterations(){
     iterations = iterationsSlider.value();
-    drawMandelbrot();
+
+    // Decrease the highres resolution if the iterations get higher to improve performance.
+    if (iterations > 250 && iterations < 350) highresResPerFrame = [30, 30];
+    else if (iterations > 200 && iterations < 250) highresResPerFrame = [70, 70];
+    else if (iterations > 100 && iterations < 200) highresResPerFrame = [150, 150];
+    else highresResPerFrame = [200, 200];
+
+    console.log(iterations);
+    drawMandelbrot(LOW_RES_PIXELSKIP);
 }
 
 function iterateNumber(real, imag){
@@ -48,12 +65,17 @@ function iterateNumber(real, imag){
     return 0;
 }
 
-function drawMandelbrot(){
-    background(0);
+function drawMandelbrot(pixelSkipCount, clearBg=true,yRange=[0, height], xRange=[0, width]){
+    if (clearBg)
+        background(0);
+    
+    if (pixelSkipCount != 1)
+        lastPixelsDrawn = [0, 0];
+    
     loadPixels();
 
-    for (var y = 0; y < height; y++) {
-        for (var x = 0; x < width; x++){
+    for (var y = yRange[0]; y < yRange[1]; y++) {
+        for (var x = xRange[0]; x < xRange[1]; x++){
             let i = (y * width + x) * 4;
             if (x % pixelSkipCount == 0 && y % pixelSkipCount == 0){
                 coords = pixelToCoords([x, y]);
@@ -97,8 +119,7 @@ function mouseWheel(event) {
     origin[0] -= currentPos[0] - lastPos[0];
     origin[1] -= currentPos[1] - lastPos[1];
 
-
-    drawMandelbrot();
+    drawMandelbrot(LOW_RES_PIXELSKIP, clearBg=true);
 }
 
 function mouseClicked() {
@@ -108,7 +129,7 @@ function mouseClicked() {
     let mouseCoords = pixelToCoords(mousePos);
     origin = mouseCoords;
 
-    drawMandelbrot();
+    drawMandelbrot(LOW_RES_PIXELSKIP, clearBg=true);
 }
 
 function clamp(num, _min, _max){

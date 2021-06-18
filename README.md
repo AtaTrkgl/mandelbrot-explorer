@@ -7,9 +7,6 @@ This project uses p5.js to visualize [the Mandelbrot Set](https://en.wikipedia.o
 - *Scrollwheel:* Zoom in/out.
 - *Left-click:* Center the mouse position.
 - *Slider:* Changes the maximum allowed iterations. (Effects performance heavily.)
-- *Resolution  Buttons:* Allows you to toggle between pixelated and detailed versions.
-
-> Note that it is recommended to use the low-res mode while moving so the site can refresh more frequently, then you can activate the high-res mode to generate the detailed version.
 
 ## Some Screenshots
 
