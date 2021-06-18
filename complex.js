@@ -5,6 +5,10 @@ class Complex {
         this.im = im;
     }
 
+    abs(){
+        return Math.sqrt(this.re ** 2 + this.im ** 2);
+    }
+
     static multiply(num1, num2){
         // (a + bi) * (c + di) = ac + adi + bci + bdi^2
         // which can be written as: ac - bd + (ad + bc)i

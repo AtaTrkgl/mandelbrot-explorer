@@ -58,8 +58,11 @@ function iterateNumber(real, imag){
     let z = new Complex(0, 0);
     for (let i = 0; i < iterations; i++) {
         z = Complex.add(Complex.multiply(z, z), c);
-        if (abs(z.re) + abs(z.im) > 10){
-            return i/iterations * 255;
+        
+        if (z.abs() > 10){
+            // Smooth Coloring Algorithm:
+            // https://en.wikipedia.org/wiki/Plotting_algorithms_for_the_Mandelbrot_set
+            return (i + 1 - Math.log(Math.log(z.abs()))/Math.log(2))/iterations * 255;
         }
     }
 
