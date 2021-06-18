@@ -19,6 +19,7 @@ function setup()
     frameRate(60);
 
     iterationsSlider = createSlider(5, 300, iterations, 1);
+
     iterApplyButton = createButton("Apply Iterations");
     iterApplyButton.mousePressed(applyIterations);
 
@@ -58,11 +59,11 @@ function iterateNumber(real, imag){
     for (let i = 0; i < iterations; i++) {
         z = Complex.add(Complex.multiply(z, z), c);
         if (abs(z.re) + abs(z.im) > 10){
-            return i/iterations * 255 * 3;
+            return i/iterations * 255;
         }
     }
 
-    return 0;
+    return -1;
 }
 
 function drawMandelbrot(pixelSkipCount, clearBg=true,yRange=[0, height], xRange=[0, width]){
@@ -79,16 +80,18 @@ function drawMandelbrot(pixelSkipCount, clearBg=true,yRange=[0, height], xRange=
             let i = (y * width + x) * 4;
             if (x % pixelSkipCount == 0 && y % pixelSkipCount == 0){
                 coords = pixelToCoords([x, y]);
-                let iteratedColor = iterateNumber(coords[0], coords[1]);
+                var iteratedColor = iterateNumber(coords[0], coords[1]);
 
-                pixels[i + 0] = clamp(iteratedColor - 255 * 2, 0 ,255);
-                pixels[i + 1] = clamp(iteratedColor - 255 * 1, 0 ,255);
-                pixels[i + 2] = clamp(iteratedColor, 0 ,255);
+                colorMode(HSB, 255);
+                var c = color(abs(iteratedColor), 255,iteratedColor == -1 ? 0 : 255);
+                pixels[i + 0] = clamp(red(c), 0 ,255);
+                pixels[i + 1] = clamp(green(c), 0 ,255);
+                pixels[i + 2] = clamp(blue(c), 0 ,255);
                 pixels[i + 3] = 255;
             }else{
                 yToCopy = y - (y % pixelSkipCount);
                 xToCopy = x - (x % pixelSkipCount);
-                let iToCopy = (yToCopy * width + xToCopy) * 4;
+                var iToCopy = (yToCopy * width + xToCopy) * 4;
 
                 pixels[i + 0] = pixels[iToCopy + 0];
                 pixels[i + 1] = pixels[iToCopy + 1];
@@ -106,6 +109,8 @@ function pixelToCoords(pixelCords, zoomAmount=zoom){
 }
 
 function mouseWheel(event) {
+    if (!isCursorOnCanvas()) return;
+
     let prevZoom = zoom;
     zoom -= event.delta * zoom / 300;
     if (zoom < 200) zoom = 200;
@@ -123,13 +128,17 @@ function mouseWheel(event) {
 }
 
 function mouseClicked() {
-    if (mouseX < 0 || mouseX > width || mouseY < 0 || mouseY > height) return;
+    if (!isCursorOnCanvas()) return;
 
     let mousePos = [mouseX, mouseY];
     let mouseCoords = pixelToCoords(mousePos);
     origin = mouseCoords;
 
     drawMandelbrot(LOW_RES_PIXELSKIP, clearBg=true);
+}
+
+function isCursorOnCanvas(){
+    return !(mouseX < 0 || mouseX > width || mouseY < 0 || mouseY > height);
 }
 
 function clamp(num, _min, _max){

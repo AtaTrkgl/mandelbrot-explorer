@@ -10,10 +10,10 @@ This project uses p5.js to visualize [the Mandelbrot Set](https://en.wikipedia.o
 
 ## Some Screenshots
 
-![ss 1](https://i.imgur.com/zwxydeu.png)
+![ss 1](https://i.imgur.com/JElJCSB.png)
 
-![ss 2](https://i.imgur.com/2UhrEtV.png)
+![ss 2](https://i.imgur.com/MTVdLd4.png)
 
-![ss 3](https://i.imgur.com/bsMSYGF.png)
+![ss 3](https://i.imgur.com/BsjfdYL.png)
 
 > You can right-click and use the "Save image as..." to save these through the site.
